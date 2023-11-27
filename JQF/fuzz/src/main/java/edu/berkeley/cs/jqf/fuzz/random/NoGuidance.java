@@ -37,6 +37,8 @@ import edu.berkeley.cs.jqf.fuzz.guidance.Guidance;
 import edu.berkeley.cs.jqf.fuzz.guidance.GuidanceException;
 import edu.berkeley.cs.jqf.fuzz.guidance.Result;
 import edu.berkeley.cs.jqf.fuzz.util.Coverage;
+import edu.berkeley.cs.jqf.instrument.tracing.events.BranchEvent;
+import edu.berkeley.cs.jqf.instrument.tracing.events.CallEvent;
 import edu.berkeley.cs.jqf.instrument.tracing.events.TraceEvent;
 
 /**
@@ -80,7 +82,9 @@ public class NoGuidance implements Guidance {
      */
     @Override
     public InputStream getInput() {
-        return Guidance.createInputStream(() -> random.nextInt(256));
+        int test_generated_num = 200;
+        //return Guidance.createInputStream(() -> random.nextInt(256));
+        return Guidance.createInputStream(() -> test_generated_num); //edited
     }
 
     /**
@@ -138,7 +142,20 @@ public class NoGuidance implements Guidance {
      */
     @Override
     public Consumer<TraceEvent> generateCallBack(Thread thread) {
-        return getCoverage()::handleEvent;
+        //System.out.println("In NoGuidance");
+        //getCoverage()::handleEvent
+        return (e) -> {
+            //coverage.handleEvent(e);
+             if (e instanceof BranchEvent) {
+                BranchEvent b = (BranchEvent) e;
+                System.out.println(String.format("Event ID: <%s>, branch arm: <%s>", e, b.getArm()));
+             }
+             /*else if(e instanceof CallEvent) {
+                CallEvent c = (CallEvent) e;
+                System.out.println(String.format("Event ID: <%s>, branch arm: <%s>", e, c.getIid()));
+             }*/
+              System.out.println(String.format("Thread: <%s> produced an event: <%s>", thread.getName(), e));
+        };
     }
 
     /**
