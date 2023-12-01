@@ -142,18 +142,11 @@ public class NoGuidance implements Guidance {
      */
     @Override
     public Consumer<TraceEvent> generateCallBack(Thread thread) {
-        //System.out.println("In NoGuidance");
-        //getCoverage()::handleEvent
         return (e) -> {
-            //coverage.handleEvent(e);
              if (e instanceof BranchEvent) {
                 BranchEvent b = (BranchEvent) e;
                 System.out.println(String.format("Event ID: <%s>, branch arm: <%s>", e, b.getArm()));
              }
-             /*else if(e instanceof CallEvent) {
-                CallEvent c = (CallEvent) e;
-                System.out.println(String.format("Event ID: <%s>, branch arm: <%s>", e, c.getIid()));
-             }*/
               System.out.println(String.format("Thread: <%s> produced an event: <%s>", thread.getName(), e));
         };
     }
